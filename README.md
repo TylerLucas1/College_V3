@@ -98,4 +98,4 @@ Run the script to create tables and relationships.
 ## Authors
 
 [Nathan Mulholland](https://github.com/Beast1692)
-[Steven Cain](https://github.com/Stevencain3)
+[Tyler Lucas](https://github.com/TylerLucas1)
