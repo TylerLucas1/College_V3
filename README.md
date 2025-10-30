@@ -91,7 +91,7 @@ Clone the repository:
 
 Powershell
 ```
-git clone https://github.com/TylerLucas1/CollegeV2.git
+git clone https://github.com/TylerLucas1/CollegeV3.git
 cd CollegeV3
 ```
 Import the .sql schema into MySQL Workbench.
