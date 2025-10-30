@@ -89,13 +89,15 @@ The database includes several custom **SQL views** to simplify querying and repo
 
 Clone the repository:
 
-```powershell
+Powershell
+```
 git clone https://github.com/TylerLucas1/CollegeV2.git
 cd CollegeV3
-
+```
 Import the .sql schema into MySQL Workbench.
 
 Run the script to create tables and relationships.
+
 
 ## Authors
 
