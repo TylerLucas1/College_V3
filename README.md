@@ -47,6 +47,19 @@ Below are the exported diagrams from MySQL Workbench. Click the images to view t
 [![Catalog Tree](assets/Catalog_Tree.png)](assets/Catalog_Tree.png)  
 *Catalog Tree — shows the list of tables in the generated schema.*
 
+## Key Tables
+
+- `user` – Authentication & link to student / employee.
+- `student` – Admissions, graduation, enrollment link.
+- `employee` – Faculty/Admin records with roles.
+- `department` – Academic departments.
+- `course` – Courses with credit hours.
+- `section` – Course offerings, linked to faculty/students.
+- `enrollment` – Tracks student enrollment status.
+- `semester` – Current and archived academic terms.
+- `room` / `building` – Physical classroom resources.
+- Lookups – Employee roles, grades.
+
 ## Views
 
 The database includes several custom **SQL views** to simplify querying and reporting across core entities like students, instructors, courses, and academic performance. These views were created to answer common questions and support administrative tasks.
@@ -66,19 +79,6 @@ The database includes several custom **SQL views** to simplify querying and repo
 
 > These views were built using `JOIN`, `GROUP BY`, `HAVING`, and `ORDER BY` clauses, and tested on sample data generated using `INSERT` statements.  
 > They are reusable across reporting tools or integrations with front-end dashboards.
-
-## Key Tables
-
-- `user` – Authentication & link to student / employee.
-- `student` – Admissions, graduation, enrollment link.
-- `employee` – Faculty/Admin records with roles.
-- `department` – Academic departments.
-- `course` – Courses with credit hours.
-- `section` – Course offerings, linked to faculty/students.
-- `enrollment` – Tracks student enrollment status.
-- `semester` – Current and archived academic terms.
-- `room` / `building` – Physical classroom resources.
-- Lookups – Employee roles, grades.
 
 ## Tech Stack
 

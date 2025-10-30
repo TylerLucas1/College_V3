@@ -5,19 +5,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema af25nathm1_collegev2
+-- Schema af25nathm1_collegev3
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema af25nathm1_collegev2
+-- Schema af25nathm1_collegev3
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `af25nathm1_collegev2` ;
-USE `af25nathm1_collegev2` ;
+CREATE SCHEMA IF NOT EXISTS `af25nathm1_collegev3` ;
+USE `af25nathm1_collegev3` ;
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`building`
+-- Table `af25nathm1_collegev3`.`building`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`building` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`building` (
   `building_id` INT(11) NOT NULL AUTO_INCREMENT,
   `building_name` VARCHAR(255) NULL DEFAULT NULL,
   `building_room_number` INT(11) NULL DEFAULT NULL,
@@ -29,9 +29,9 @@ AUTO_INCREMENT = 5;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`course`
+-- Table `af25nathm1_collegev3`.`course`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`course` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`course` (
   `course_id` INT(11) NOT NULL AUTO_INCREMENT,
   `course_name` VARCHAR(255) NULL DEFAULT NULL,
   `course_credit_hours` INT(11) NULL DEFAULT NULL,
@@ -45,9 +45,9 @@ AUTO_INCREMENT = 5;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`lookup_employee_role`
+-- Table `af25nathm1_collegev3`.`lookup_employee_role`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`lookup_employee_role` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`lookup_employee_role` (
   `lookup_employee_role_id` INT(11) NOT NULL AUTO_INCREMENT,
   `lookup_employee_role_name` VARCHAR(255) NULL DEFAULT NULL,
   `lookup_employee_role_security_level` INT(11) NULL DEFAULT NULL,
@@ -58,9 +58,9 @@ AUTO_INCREMENT = 9;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`employee`
+-- Table `af25nathm1_collegev3`.`employee`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`employee` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`employee` (
   `employee_id` INT(11) NOT NULL AUTO_INCREMENT,
   `employee_start_date` DATE NULL DEFAULT NULL,
   `employee_end_date` DATE NULL DEFAULT NULL,
@@ -72,16 +72,16 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`employee` (
   INDEX `fk_employee_lookup_employee_role1_idx` (`lookup_employee_role_id` ASC) VISIBLE,
   CONSTRAINT `fk_employee_lookup_employee_role1`
     FOREIGN KEY (`lookup_employee_role_id`)
-    REFERENCES `af25nathm1_collegev2`.`lookup_employee_role` (`lookup_employee_role_id`)
+    REFERENCES `af25nathm1_collegev3`.`lookup_employee_role` (`lookup_employee_role_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 9;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`department`
+-- Table `af25nathm1_collegev3`.`department`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`department` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`department` (
   `department_id` INT(11) NOT NULL,
   `department_name` VARCHAR(255) NULL DEFAULT NULL,
   `department_created` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
@@ -93,34 +93,34 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`department` (
   INDEX `fk_department_employee1_idx` (`employee_id` ASC) VISIBLE,
   CONSTRAINT `fk_department_employee1`
     FOREIGN KEY (`employee_id`)
-    REFERENCES `af25nathm1_collegev2`.`employee` (`employee_id`)
+    REFERENCES `af25nathm1_collegev3`.`employee` (`employee_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`course_has_department`
+-- Table `af25nathm1_collegev3`.`course_has_department`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`course_has_department` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`course_has_department` (
   `department_id` INT(11) NOT NULL,
   `course_id` INT(11) NOT NULL,
   INDEX `fk_course_has_department_department1_idx` (`department_id` ASC) VISIBLE,
   INDEX `fk_course_has_department_course1_idx` (`course_id` ASC) VISIBLE,
   CONSTRAINT `fk_course_has_department_course1`
     FOREIGN KEY (`course_id`)
-    REFERENCES `af25nathm1_collegev2`.`course` (`course_id`)
+    REFERENCES `af25nathm1_collegev3`.`course` (`course_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_course_has_department_department1`
     FOREIGN KEY (`department_id`)
-    REFERENCES `af25nathm1_collegev2`.`department` (`department_id`)
+    REFERENCES `af25nathm1_collegev3`.`department` (`department_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`lookup_grade`
+-- Table `af25nathm1_collegev3`.`lookup_grade`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`lookup_grade` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`lookup_grade` (
   `lookup_grade_id` INT(11) NOT NULL AUTO_INCREMENT,
   `lookup_grade_letter` VARCHAR(255) NULL DEFAULT NULL,
   `lookup_grade_point_value` INT(11) NULL DEFAULT NULL,
@@ -130,9 +130,9 @@ AUTO_INCREMENT = 6;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`semester`
+-- Table `af25nathm1_collegev3`.`semester`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`semester` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`semester` (
   `semester_id` INT(11) NOT NULL,
   `semester_season` VARCHAR(255) NULL DEFAULT NULL,
   `audit_user_id` INT(11) NOT NULL,
@@ -142,9 +142,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`student`
+-- Table `af25nathm1_collegev3`.`student`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`student` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`student` (
   `student_id` INT(11) NOT NULL AUTO_INCREMENT,
   `student_admission_date` DATE NULL DEFAULT NULL,
   `student_graduation_date` DATE NULL DEFAULT NULL,
@@ -157,9 +157,9 @@ AUTO_INCREMENT = 5;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`enrollment`
+-- Table `af25nathm1_collegev3`.`enrollment`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`enrollment` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`enrollment` (
   `enrollment_id` INT(11) NOT NULL AUTO_INCREMENT,
   `enrollment_status` VARCHAR(255) NULL DEFAULT NULL,
   `enrolment_created` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
@@ -174,24 +174,24 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`enrollment` (
   INDEX `fk_enrollment_lookup_grade1_idx` (`lookup_grade_id` ASC) VISIBLE,
   CONSTRAINT `fk_enrollment_lookup_grade1`
     FOREIGN KEY (`lookup_grade_id`)
-    REFERENCES `af25nathm1_collegev2`.`lookup_grade` (`lookup_grade_id`)
+    REFERENCES `af25nathm1_collegev3`.`lookup_grade` (`lookup_grade_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_enrollment_semester1`
     FOREIGN KEY (`semester_id`)
-    REFERENCES `af25nathm1_collegev2`.`semester` (`semester_id`)
+    REFERENCES `af25nathm1_collegev3`.`semester` (`semester_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_enrollment_student1`
     FOREIGN KEY (`student_student_id`)
-    REFERENCES `af25nathm1_collegev2`.`student` (`student_id`)
+    REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 5;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`section`
+-- Table `af25nathm1_collegev3`.`section`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`section` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`section` (
   `section_id` INT(11) NOT NULL AUTO_INCREMENT,
   `section_days` VARCHAR(255) NULL DEFAULT NULL,
   `section_times` VARCHAR(255) NULL DEFAULT NULL,
@@ -205,24 +205,24 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`section` (
   INDEX `fk_section_student1_idx` (`student_id` ASC) VISIBLE,
   CONSTRAINT `fk_section_course1`
     FOREIGN KEY (`course_id`)
-    REFERENCES `af25nathm1_collegev2`.`course` (`course_id`)
+    REFERENCES `af25nathm1_collegev3`.`course` (`course_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_section_employee1`
     FOREIGN KEY (`employee_id`)
-    REFERENCES `af25nathm1_collegev2`.`employee` (`employee_id`)
+    REFERENCES `af25nathm1_collegev3`.`employee` (`employee_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_section_student1`
     FOREIGN KEY (`student_id`)
-    REFERENCES `af25nathm1_collegev2`.`student` (`student_id`)
+    REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 5;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`room`
+-- Table `af25nathm1_collegev3`.`room`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`room` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`room` (
   `room_id` INT(11) NOT NULL AUTO_INCREMENT,
   `room_name` VARCHAR(255) NULL DEFAULT NULL,
   `room_capacity` INT(11) NULL DEFAULT NULL,
@@ -240,28 +240,28 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`room` (
   INDEX `fk_room_employee1_idx` (`employee_id` ASC) VISIBLE,
   CONSTRAINT `fk_room_building1`
     FOREIGN KEY (`building_id`)
-    REFERENCES `af25nathm1_collegev2`.`building` (`building_id`)
+    REFERENCES `af25nathm1_collegev3`.`building` (`building_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_room_employee1`
     FOREIGN KEY (`employee_id`)
-    REFERENCES `af25nathm1_collegev2`.`employee` (`employee_id`)
+    REFERENCES `af25nathm1_collegev3`.`employee` (`employee_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_room_section1`
     FOREIGN KEY (`section_id`)
-    REFERENCES `af25nathm1_collegev2`.`section` (`section_id`)
+    REFERENCES `af25nathm1_collegev3`.`section` (`section_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_room_student1`
     FOREIGN KEY (`student_id`)
-    REFERENCES `af25nathm1_collegev2`.`student` (`student_id`)
+    REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 5;
 
 
 -- -----------------------------------------------------
--- Table `af25nathm1_collegev2`.`user`
+-- Table `af25nathm1_collegev3`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`user` (
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`user` (
   `user_id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_fname` VARCHAR(255) NULL DEFAULT NULL,
   `user_lname` VARCHAR(255) NULL DEFAULT NULL,
@@ -277,11 +277,11 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev2`.`user` (
   INDEX `fk_user_student1_idx` (`student_id` ASC) VISIBLE,
   CONSTRAINT `fk_user_employee`
     FOREIGN KEY (`employee_employee_id`)
-    REFERENCES `af25nathm1_collegev2`.`employee` (`employee_id`)
+    REFERENCES `af25nathm1_collegev3`.`employee` (`employee_id`)
     ON UPDATE CASCADE,
   CONSTRAINT `fk_user_student1`
     FOREIGN KEY (`student_id`)
-    REFERENCES `af25nathm1_collegev2`.`student` (`student_id`)
+    REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 5;
