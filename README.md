@@ -1,6 +1,6 @@
 # 📚 Student Information System Database
 
-A relational Student Information System (SIS) database designed for Students, Faculty, and Admins to manage grades, enrollment, courses, rooms, and departments.
+A relational Student Information System (SIS) database designed for Students, Faculty, and Admins to manage grades, enrollment, courses, rooms, and departments.  
 [![MariaDB](https://img.shields.io/badge/MariaDB-003545?logo=mariadb&logoColor=white)](#)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=fff)](#)
 
@@ -12,6 +12,7 @@ A relational Student Information System (SIS) database designed for Students, Fa
 - [Entity–Relationship Model](#entity–relationship-model)
   - [Diagram](#diagram)
   - [Key Tables](#key-tables)
+- [Views](#views)
 - [Tech Stack](#tech-stack)
 - [Setup](#setup)
 - [Authors](#authors)
@@ -40,31 +41,33 @@ The schema enforces role-based access, integrity, and scalability.
 
 Below are the exported diagrams from MySQL Workbench. Click the images to view the full-size versions.
 
-[![EER Diagram](assets/EER_Diagram.png)](assets/EER_Diagram.png)
+[![EER Diagram](assets/EER_Diagram.png)](assets/EER_Diagram.png)  
 *EER Diagram — shows tables and relationships.*
 
-[![Catalog Tree](assets/Catalog_Tree.png)](assets/Catalog_Tree.png)
+[![Catalog Tree](assets/Catalog_Tree.png)](assets/Catalog_Tree.png)  
 *Catalog Tree — shows the list of tables in the generated schema.*
 
-##  Views
+## Views
 
 The database includes several custom **SQL views** to simplify querying and reporting across core entities like students, instructors, courses, and academic performance. These views were created to answer common questions and support administrative tasks.
 
-###  Implemented Views
+### Implemented Views
 
-| View Name                        | Description                                                                 |
-|----------------------------------|-----------------------------------------------------------------------------|
-| `sections_with_rooms_view`      | Displays which instructors are teaching which courses, in which rooms, and at what times. Includes course name, room details, and instructor info. |
-| `graduated_students_high_gpa_view` | Lists all students who have **graduated** with a **GPA above 3.5**, including their admission/graduation dates and GPA. |
-| `instructor_by_role_view`       | Shows employees with their assigned role titles, security levels, and personal details. Helps identify faculty/staff structure. |
-| `semesters_by_student_view`     | Lists all semesters each student has been enrolled in, including enrollment status (e.g., Active, Completed, Withdrawn). Useful for tracking student progress over time. |
+| View Name | Description |
+|------------|-------------|
+| `vw_enrollment_details` | Displays each student’s enrollment information, including semester, grade, and status. |
+| `vw_course_schedule` | Lists course sections with instructor, room, and building details for scheduling. |
+| `vw_student_enrollment_summary` | Summarizes each student’s total, active, and completed enrollments, plus GPA. |
+| `vw_department_course_counts` | Shows department heads, total courses offered, and course listings. |
+| `sections_with_rooms_view` | Displays which instructors are teaching which courses, in which rooms, and at what times. |
+| `graduated_students_high_gpa_view` | Lists all students who have graduated with a GPA above 3.5, including admission and graduation dates. |
+| `instructor_by_role_view` | Shows employees with their assigned roles, titles, and personal details. |
+| `semesters_by_student_view` | Lists all semesters each student has been enrolled in, including status (Active, Completed, Withdrawn). |
 
 > These views were built using `JOIN`, `GROUP BY`, `HAVING`, and `ORDER BY` clauses, and tested on sample data generated using `INSERT` statements.  
 > They are reusable across reporting tools or integrations with front-end dashboards.
 
-
-
-### Key Tables
+## Key Tables
 
 - `user` – Authentication & link to student / employee.
 - `student` – Admissions, graduation, enrollment link.
@@ -79,7 +82,7 @@ The database includes several custom **SQL views** to simplify querying and repo
 
 ## Tech Stack
 
-- Database: MySQL / MariaDB
+- Database: MySQL / MariaDB  
 - Modeling: MySQL Workbench (Forward Engineering)
 
 ## Setup
@@ -87,9 +90,8 @@ The database includes several custom **SQL views** to simplify querying and repo
 Clone the repository:
 
 ```powershell
-git clone https://github.com/Beast1692/CollegeV2.git
-cd CollegeV2
-```
+git clone https://github.com/TylerLucas1/CollegeV2.git
+cd CollegeV3
 
 Import the .sql schema into MySQL Workbench.
 
