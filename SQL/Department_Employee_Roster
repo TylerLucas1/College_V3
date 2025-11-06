@@ -1,0 +1,27 @@
+DELIMITER //
+CREATE PROCEDURE department_employee_roster (in dept_id int)
+BEGIN
+    START TRANSACTION;
+
+    LOCK TABLES department READ,
+                employee READ,
+                lookup_employee_role READ;
+
+    select 
+        e.employee_id,
+        e.employee_start_date,
+        e.employee_end_date,
+        e.employee_created,
+        e.audit_user_id
+        e.employee_edited,
+        ler.lookup_employee_role,
+
+    from employee e
+    inner join department d on e.employee_id = d.employee_id
+    inner join lookup_employee_role ler on e.lookup_employee_role_id = ler.lookup_employee_role_id
+    where d.department_id = dept.id;
+
+    unlock tables;
+    commit;
+END //
+DELIMITER ;
