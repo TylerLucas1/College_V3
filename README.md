@@ -13,6 +13,7 @@ A relational Student Information System (SIS) database designed for Students, Fa
   - [Diagram](#diagram)
   - [Key Tables](#key-tables)
 - [Views](#views)
+- [SQL Procedures, Functions & Transactions](#sql-procedures-functions--transactions)
 - [Tech Stack](#tech-stack)
 - [Setup](#setup)
 - [Authors](#authors)
@@ -79,6 +80,16 @@ The database includes several custom **SQL views** to simplify querying and repo
 
 > These views were built using `JOIN`, `GROUP BY`, `HAVING`, and `ORDER BY` clauses, and tested on sample data generated using `INSERT` statements.  
 > They are reusable across reporting tools or integrations with front-end dashboards.
+
+## SQL Procedures, Functions & Transactions
+
+The database includes custom **stored procedures**, **functions**, and **transactional procedures** for common operations:
+
+- **Custom Functions (FN)**: `fn_get_student_enrollment_count`, `fn_get_student_avg_grade_point`, `total_credits`
+- **Stored Procedures (SP)**: `sp_enroll_student`, `sp_assign_employee_to_department`
+- **Transaction Procedures (TX)**: `tx_transfer_student_section`, `tx_transfer_student_section_locked`
+
+For detailed usage examples, parameters, and error handling, see the **[SQL Procedures, Functions & Transactions Guide](/assets/SQL_PROCEDURES_GUIDE.md)**.
 
 ## Tech Stack
 
