@@ -85,8 +85,8 @@ The database includes several custom **SQL views** to simplify querying and repo
 
 The database includes custom **stored procedures**, **functions**, and **transactional procedures** for common operations:
 
-- **Custom Functions (FN)**: `fn_get_student_enrollment_count`, `fn_get_student_avg_grade_point`, `total_credits`
-- **Stored Procedures (SP)**: `sp_enroll_student`, `sp_assign_employee_to_department`
+- **Custom Functions (FN)**: `fn_get_student_enrollment_count`, `fn_is_employee_qualified_for_department`, `fn_get_building_capacity`, `fn_student_status`
+- **Stored Procedures (SP)**: `sp_enroll_student`, `sp_assign_employee_to_department`, `sp_assign_room`, `sp_calculate_student_gpa`, `sp_get_student_courses`
 - **Transaction Procedures (TX)**: `tx_transfer_student_section`, `tx_transfer_student_section_locked`
 
 For detailed usage examples, parameters, and error handling, see the **[SQL Procedures, Functions & Transactions Guide](/assets/SQL_PROCEDURES_GUIDE.md)**.

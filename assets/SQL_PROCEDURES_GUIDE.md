@@ -9,7 +9,9 @@ This guide demonstrates how to use each stored procedure (SP), custom function (
 - [Custom Functions (FN)](#custom-functions-fn)
   - [fn_get_student_enrollment_count](#fn_get_student_enrollment_count)
   - [fn_get_student_avg_grade_point](#fn_get_student_avg_grade_point)
-  - [total_credits](#total_credits)
+  - [fn_is_employee_qualified_for_department](#fn_is_employee_qualified_for_department)
+  - [fn_get_building_capacity](#fn_get_building_capacity)
+  - [fn_student_status](#fn_student_status)
 - [Stored Procedures (SP)](#stored-procedures-sp)
   - [sp_enroll_student](#sp_enroll_student)
   - [sp_assign_employee_to_department](#sp_assign_employee_to_department)
@@ -70,26 +72,53 @@ ORDER BY gpa DESC;
 
 ---
 
-### total_credits
+### fn_is_employee_qualified_for_department
 
-**Purpose:** Sums all course credit hours for a student's currently enrolled sections.
+**Purpose:** Returns TRUE if an employee is allowed to be a department head. The check uses the employee's role security level and prevents someone who already heads another department from taking on another head role.
 
 **Parameters:**
-- `in_student_id` (INT) – The student ID
+- `in_employee_id` (INT) – The employee ID
+- `in_department_id` (INT) – Department to evaluate (excludes this department when checking "already head")
 
-**Returns:** INT (total credit hours)
+**Returns:** BOOLEAN (TRUE = qualified, FALSE = not qualified)
 
 **Usage Example:**
 ```sql
--- Get total credits for student 3
-SELECT af25nathm1_collegev3.total_credits(3) AS total_credit_hours;
--- Output: 6 (or the sum of their course credits)
+-- Is employee 3 qualified to head department 1?
+SELECT af25nathm1_collegev3.fn_is_employee_qualified_for_department(3, 1) AS is_qualified;
+-- Output: 1 (TRUE) if employee has a role >= required_level and isn't already a head elsewhere
+```
 
--- Find students with high credit loads (> 12 hours)
-SELECT student_id, af25nathm1_collegev3.total_credits(student_id) AS credits
-FROM af25nathm1_collegev3.student
-WHERE af25nathm1_collegev3.total_credits(student_id) > 12
-ORDER BY credits DESC;
+---
+
+### fn_get_building_capacity
+
+**Purpose:** Sums the capacity of all rooms in a building to determine overall building capacity.
+
+**Parameters:**
+- `in_building_id` (INT) – Building numeric ID from `building.building_id`
+
+**Returns:** INT
+
+**Usage Example:**
+```sql
+SELECT af25nathm1_collegev3.fn_get_building_capacity(1) AS total_capacity;
+```
+
+---
+
+### fn_student_status
+
+**Purpose:** Simple status check helper. Returns a student's status — `Active`, `Graduated`, or `Unknown` — using the student's graduation date.
+
+**Parameters:**
+- `p_student_id` (INT) – The student ID
+
+**Returns:** VARCHAR(50)
+
+**Usage Example:**
+```sql
+SELECT af25nathm1_collegev3.fn_student_status(1) AS student_status;
 ```
 
 ---
@@ -105,7 +134,6 @@ Procedures perform actions (INSERT, UPDATE, DELETE) and return result sets. Call
 **Parameters:**
 - `p_student_id` (INT IN) – The student to enroll
 - `p_semester_id` (INT IN) – The semester
-- `p_lookup_grade_id` (INT IN) – Initial grade ID (1=A, 2=B, 3=C, 4=D, 5=F)
 - `p_audit_user_id` (INT IN) – User ID for audit trail
 - `p_enrollment_id` (INT OUT) – Returns the new enrollment_id (or -1 on error)
 
@@ -113,13 +141,12 @@ Procedures perform actions (INSERT, UPDATE, DELETE) and return result sets. Call
 
 **Usage Example:**
 ```sql
--- Enroll student 5 in semester 2 with grade B (lookup_grade_id=2)
-CALL af25nathm1_collegev3.sp_enroll_student(5, 2, 2, 1, @enrollment_id);
+-- Enroll student 5 in semester 2 (grade initially unknown; set later)
+CALL af25nathm1_collegev3.sp_enroll_student(5, 2, 1, @enrollment_id);
 SELECT @enrollment_id AS new_enrollment_id;
 -- Output: new_enrollment_id = 51 (or next auto-increment)
 
--- Enroll student 10 in semester 3 with grade A
-CALL af25nathm1_collegev3.sp_enroll_student(10, 3, 1, 1, @new_id);
+CALL af25nathm1_collegev3.sp_enroll_student(10, 3, 1, @new_id);
 SELECT @new_id;
 ```
 
@@ -127,7 +154,7 @@ SELECT @new_id;
 
 ### sp_assign_employee_to_department
 
-**Purpose:** Assigns an employee as the head of a department. Validates both employee and department exist.
+**Purpose:** Assigns an employee as the head of a department. Validates both employee and department exist and consults `fn_is_employee_qualified_for_department` to ensure the employee has sufficient security level and isn't already heading another department.
 
 **Parameters:**
 - `in_employee_id` (INT IN) – The employee to assign
@@ -147,6 +174,32 @@ CALL af25nathm1_collegev3.sp_assign_employee_to_department(5, 1);
 -- Error case: invalid employee ID
 CALL af25nathm1_collegev3.sp_assign_employee_to_department(999, 1);
 -- Output: ERROR 1644 (45000): Employee not found
+-- Note: Procedure will also return ERROR 1644 if the `fn_is_employee_qualified_for_department` returns FALSE (insufficient role or already heads another department).
+```
+---
+
+### sp_assign_room
+
+**Purpose:** Assigns or creates a `room` entry for a `section`, with building, student or employee associations. The procedure checks for schedule conflicts and uses a transaction to avoid double-booking.
+
+**Parameters:**
+- `p_room_id` (INT) – Room numeric identifier (existing or new)
+- `p_section_id` (INT) – Section to associate
+- `p_student_id` (INT) – Student assigned to the room (nullable)
+- `p_employee_id` (INT) – Employee responsible for or associated with the room (nullable)
+- `p_building_id` (INT) – Building id
+- `p_audit_user_id` (INT) – `audit_user_id` for auditing
+
+**Returns:** Inserts a new `room` record and raises `45000` on scheduling conflicts.
+
+**Usage Example:**
+```sql
+CALL af25nathm1_collegev3.sp_assign_room(99, 1, NULL, 3, 1, 1);
+```
+
+**Notes:**
+- The current implementation INSERTs a new `room`. Consider switching to an update if rooms already exist.
+- Schedule conflict detection uses strict string equality on `section_days` and `section_times`.
 ```
 
 ---
@@ -234,15 +287,21 @@ SELECT af25nathm1_collegev3.fn_get_student_enrollment_count(1) AS enrollments;
 -- Test GPA function
 SELECT af25nathm1_collegev3.fn_get_student_avg_grade_point(1) AS avg_gpa;
 
--- Test total credits function
-SELECT af25nathm1_collegev3.total_credits(1) AS credits;
+-- Test building capacity function
+SELECT af25nathm1_collegev3.fn_get_building_capacity(1) AS building_capacity;
+
+-- Test employee qualification function
+SELECT af25nathm1_collegev3.fn_is_employee_qualified_for_department(3, 1) AS is_qualified;
+
+-- Test student status function
+SELECT af25nathm1_collegev3.fn_student_status(1) AS student_status;
 ```
 
 ### Test All Procedures
 
 ```sql
 -- Test enrollment procedure
-CALL af25nathm1_collegev3.sp_enroll_student(2, 1, 1, 1, @enrollment_id);
+CALL af25nathm1_collegev3.sp_enroll_student(2, 1, 1, @enrollment_id);
 SELECT @enrollment_id;
 
 -- Test department assignment
@@ -253,6 +312,15 @@ CALL af25nathm1_collegev3.tx_transfer_student_section(1, 1, 2);
 
 -- Test student transfer (locked)
 CALL af25nathm1_collegev3.tx_transfer_student_section_locked(3, 3, 4);
+
+-- Test GPA calculation
+CALL af25nathm1_collegev3.sp_calculate_student_gpa(1);
+
+-- Test get student courses
+CALL af25nathm1_collegev3.sp_get_student_courses(1);
+
+-- Assign a room
+CALL af25nathm1_collegev3.sp_assign_room(1, 1, NULL, 3, 1, 1);
 ```
 
 ---
@@ -276,10 +344,14 @@ All procedures and functions include error handling:
 | Name | Type | Input | Output | Notes |
 |------|------|-------|--------|-------|
 | `fn_get_student_enrollment_count` | Function | student_id | COUNT | Read-only, DETERMINISTIC |
-| `fn_get_student_avg_grade_point` | Function | student_id | DECIMAL(5,2) | Read-only, DETERMINISTIC |
-| `total_credits` | Function | student_id | INT | Read-only, DETERMINISTIC |
-| `sp_enroll_student` | Procedure | student, semester, grade, audit_user | enrollment_id (OUT) | Transactional, INSERT |
+| `fn_is_employee_qualified_for_department` | Function | employee_id, department_id | BOOLEAN | Read-only, DETERMINISTIC, returns TRUE if employee is eligible to be department head |
+| `fn_get_building_capacity` | Function | in_building_id | INT | Read-only, sums room capacities for a building |
+| `fn_student_status` | Function | student_id | VARCHAR(50) | Read-only, returns Active/Graduated/Unknown |
+| `sp_enroll_student` | Procedure | student, semester, audit_user | enrollment_id (OUT) | Transactional, INSERT (grade is optional and set later) |
 | `sp_assign_employee_to_department` | Procedure | employee_id, department_id | department row (SELECT) | Transactional, UPDATE |
+| `sp_assign_room` | Procedure | room, section, student, employee, building, audit_user | room row (INSERT) | Transactional, INSERT (checks schedule conflicts) |
+| `sp_calculate_student_gpa` | Procedure | student_id | SELECT (student_id, GPA) | Transactional, calculates & returns average grade points |
+| `sp_get_student_courses` | Procedure | student_id | ResultSet (section/course rows) | Read-only SELECT, returns enrolled courses and section details |
 | `tx_transfer_student_section` | Procedure | student_id, from_section, to_section | None | Transactional, UPDATE (locked) |
 | `tx_transfer_student_section_locked` | Procedure | student_id, from_section, to_section | None | Transactional, UPDATE (locked, enhanced) |
 
