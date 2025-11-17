@@ -11,7 +11,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema af25nathm1_collegev3
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `af25nathm1_collegev3` ;
+CREATE SCHEMA IF NOT EXISTS `af25nathm1_collegev3` DEFAULT CHARACTER SET utf8mb4 ;
 USE `af25nathm1_collegev3` ;
 
 -- -----------------------------------------------------
@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`building` (
   PRIMARY KEY (`building_id`),
   INDEX `BUILDING_NAME` (`building_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 15
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -41,7 +42,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`course` (
   PRIMARY KEY (`course_id`),
   INDEX `course_name` (`course_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 25
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -54,7 +56,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`lookup_employee_role` (
   PRIMARY KEY (`lookup_employee_role_id`),
   INDEX `role` (`lookup_employee_role_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 9;
+AUTO_INCREMENT = 9
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -75,7 +78,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`employee` (
     REFERENCES `af25nathm1_collegev3`.`lookup_employee_role` (`lookup_employee_role_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 9;
+AUTO_INCREMENT = 29
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -95,7 +99,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`department` (
     FOREIGN KEY (`employee_id`)
     REFERENCES `af25nathm1_collegev3`.`employee` (`employee_id`)
     ON UPDATE CASCADE)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -114,19 +119,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`course_has_department` (
     FOREIGN KEY (`department_id`)
     REFERENCES `af25nathm1_collegev3`.`department` (`department_id`)
     ON UPDATE CASCADE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `af25nathm1_collegev3`.`lookup_grade`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`lookup_grade` (
-  `lookup_grade_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `lookup_grade_letter` VARCHAR(255) NULL DEFAULT NULL,
-  `lookup_grade_point_value` INT(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`lookup_grade_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 6;
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -138,7 +132,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`semester` (
   `audit_user_id` INT(11) NOT NULL,
   PRIMARY KEY (`semester_id`),
   INDEX `semester_season` (`semester_season` ASC) VISIBLE)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -153,7 +148,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`student` (
   `faculty_edited` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
   PRIMARY KEY (`student_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 54
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -161,21 +157,19 @@ AUTO_INCREMENT = 5;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`enrollment` (
   `enrollment_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `enrollment_status` VARCHAR(255) NULL DEFAULT NULL,
+  `enrollment_status` VARCHAR(255) NULL DEFAULT '"Active"',
   `enrolment_created` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   `audit_user_id` INT(11) NOT NULL,
   `enrollment_audited` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
   `student_student_id` INT(11) NOT NULL,
   `semester_id` INT(11) NOT NULL,
-  `lookup_grade_id` INT(11) NOT NULL,
+  `lookup_grade_id` INT(11) NULL DEFAULT NULL,
+  `section_id` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`enrollment_id`),
   INDEX `fk_enrollment_student1_idx` (`student_student_id` ASC) VISIBLE,
   INDEX `fk_enrollment_semester1_idx` (`semester_id` ASC) VISIBLE,
   INDEX `fk_enrollment_lookup_grade1_idx` (`lookup_grade_id` ASC) VISIBLE,
-  CONSTRAINT `fk_enrollment_lookup_grade1`
-    FOREIGN KEY (`lookup_grade_id`)
-    REFERENCES `af25nathm1_collegev3`.`lookup_grade` (`lookup_grade_id`)
-    ON UPDATE CASCADE,
+  INDEX `idx_enrollment_section` (`section_id` ASC) VISIBLE,
   CONSTRAINT `fk_enrollment_semester1`
     FOREIGN KEY (`semester_id`)
     REFERENCES `af25nathm1_collegev3`.`semester` (`semester_id`)
@@ -185,7 +179,44 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`enrollment` (
     REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 55
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `af25nathm1_collegev3`.`enrollment_backup`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`enrollment_backup` (
+  `enrollment_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `enrollment_status` VARCHAR(255) NULL DEFAULT NULL,
+  `enrolment_created` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+  `audit_user_id` INT(11) NOT NULL,
+  `enrollment_audited` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  `student_student_id` INT(11) NOT NULL,
+  `semester_id` INT(11) NOT NULL,
+  `lookup_grade_id` INT(11) NOT NULL,
+  `section_id` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`enrollment_id`),
+  INDEX `fk_enrollment_student1_idx` (`student_student_id` ASC) VISIBLE,
+  INDEX `fk_enrollment_semester1_idx` (`semester_id` ASC) VISIBLE,
+  INDEX `fk_enrollment_lookup_grade1_idx` (`lookup_grade_id` ASC) VISIBLE,
+  INDEX `idx_enrollment_section` (`section_id` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 55
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `af25nathm1_collegev3`.`lookup_grade`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`lookup_grade` (
+  `lookup_grade_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `lookup_grade_letter` VARCHAR(255) NULL DEFAULT NULL,
+  `lookup_grade_point_value` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`lookup_grade_id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 6
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -199,10 +230,12 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`section` (
   `course_id` INT(11) NOT NULL,
   `employee_id` INT(11) NOT NULL,
   `student_id` INT(11) NOT NULL,
+  `room_id` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`section_id`),
   INDEX `fk_section_course1_idx` (`course_id` ASC) VISIBLE,
   INDEX `fk_section_employee1_idx` (`employee_id` ASC) VISIBLE,
   INDEX `fk_section_student1_idx` (`student_id` ASC) VISIBLE,
+  INDEX `fk_section_room` (`room_id` ASC) VISIBLE,
   CONSTRAINT `fk_section_course1`
     FOREIGN KEY (`course_id`)
     REFERENCES `af25nathm1_collegev3`.`course` (`course_id`)
@@ -211,12 +244,18 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`section` (
     FOREIGN KEY (`employee_id`)
     REFERENCES `af25nathm1_collegev3`.`employee` (`employee_id`)
     ON UPDATE CASCADE,
+  CONSTRAINT `fk_section_room`
+    FOREIGN KEY (`room_id`)
+    REFERENCES `af25nathm1_collegev3`.`room` (`room_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_section_student1`
     FOREIGN KEY (`student_id`)
     REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 35
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -227,12 +266,12 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`room` (
   `room_name` VARCHAR(255) NULL DEFAULT NULL,
   `room_capacity` INT(11) NULL DEFAULT NULL,
   `room_created` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-  `audit_user_id` INT(11) NOT NULL,
+  `audit_user_id` INT(11) NOT NULL DEFAULT 0,
   `room_audited` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
-  `section_id` INT(11) NOT NULL,
-  `student_id` INT(11) NOT NULL,
-  `building_id` INT(11) NOT NULL,
-  `employee_id` INT(11) NOT NULL,
+  `section_id` INT(11) NOT NULL DEFAULT 0,
+  `student_id` INT(11) NOT NULL DEFAULT 0,
+  `building_id` INT(11) NOT NULL DEFAULT 0,
+  `employee_id` INT(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`room_id`),
   INDEX `fk_room_section1_idx` (`section_id` ASC) VISIBLE,
   INDEX `fk_room_student1_idx` (`student_id` ASC) VISIBLE,
@@ -255,7 +294,8 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`room` (
     REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 26
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
@@ -284,7 +324,85 @@ CREATE TABLE IF NOT EXISTS `af25nathm1_collegev3`.`user` (
     REFERENCES `af25nathm1_collegev3`.`student` (`student_id`)
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5;
+AUTO_INCREMENT = 62
+DEFAULT CHARACTER SET = utf8mb4;
+
+USE `af25nathm1_collegev3` ;
+
+-- -----------------------------------------------------
+-- procedure assign_employee_to_department
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `af25nathm1_collegev3`$$
+CREATE DEFINER=`af25nathm1`@`localhost` PROCEDURE `assign_employee_to_department`(
+    IN in_employee_id INT,
+    IN in_department_id INT
+)
+BEGIN
+    DECLARE v_exists INT DEFAULT 0;
+
+    START TRANSACTION;
+
+    -- verify employee exists
+    SELECT COUNT(*) INTO v_exists FROM employee WHERE employee_id = in_employee_id;
+    IF v_exists = 0 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee not found';
+    END IF;
+
+    -- verify department exists
+    SELECT COUNT(*) INTO v_exists FROM department WHERE department_id = in_department_id;
+    IF v_exists = 0 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Department not found';
+    END IF;
+
+    -- perform assignment
+    UPDATE department
+    SET employee_id = in_employee_id
+    WHERE department_id = in_department_id;
+
+    SELECT department_id, department_name, employee_id
+    FROM department
+    WHERE department_id = in_department_id;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function available_seats
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `af25nathm1_collegev3`$$
+CREATE DEFINER=`af25nathm1`@`localhost` FUNCTION `available_seats`(in_section_id INT) RETURNS int(11)
+    READS SQL DATA
+    DETERMINISTIC
+BEGIN
+    DECLARE room_cap INT DEFAULT 0;
+    DECLARE enrolled INT DEFAULT 0;
+    DECLARE avail INT DEFAULT 0;
+
+    SELECT COALESCE(r.room_capacity, 0) INTO room_cap
+    FROM section s
+    LEFT JOIN room r ON r.room_id = s.room_id
+    WHERE s.section_id = in_section_id
+    LIMIT 1;
+
+    SELECT COUNT(*) INTO enrolled
+    FROM enrollment e
+    WHERE e.section_id = in_section_id;
+
+    SET avail = room_cap - COALESCE(enrolled,0);
+    IF avail < 0 THEN SET avail = 0; END IF;
+    RETURN avail;
+END$$
+
+DELIMITER ;
+
 
 -- ---------------------------
 -- Reference data: roles, grades, semesters

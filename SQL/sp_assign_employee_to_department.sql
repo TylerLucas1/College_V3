@@ -6,6 +6,7 @@ CREATE PROCEDURE af25nathm1_collegev3.assign_employee_to_department(
 )
 BEGIN
     DECLARE v_exists INT DEFAULT 0;
+    DECLARE v_is_qualified BOOLEAN DEFAULT FALSE;
 
     START TRANSACTION;
 
@@ -19,6 +20,12 @@ BEGIN
     IF v_exists = 0 THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Department not found';
+    END IF;
+
+    SET v_is_qualified = af25nathm1_collegev3.fn_is_employee_qualified_for_department(in_employee_id, in_department_id);
+    IF v_is_qualified = FALSE THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee not qualified: insufficient security level or already heads another department';
     END IF;
 
     UPDATE af25nathm1_collegev3.department
